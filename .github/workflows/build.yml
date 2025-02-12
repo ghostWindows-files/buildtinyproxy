@@ -1,12 +1,7 @@
 name: Build Tinyproxy
 
 on:
-  push:
-    branches:
-      - main  # 或者你想要触发构建的分支
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
@@ -37,8 +32,16 @@ jobs:
       - name: Create artifact
         run: |
           mkdir -p artifacts
-          cp /usr/local/sbin/tinyproxy artifacts/  # 假设安装到 /usr/local/sbin/
-        
+          # 尝试查找 tinyproxy 的位置。  如果 make install 安装到了 /usr/local/sbin/，则使用以下命令。
+          # 如果安装到了其他位置，请修改此行。
+          cp /usr/local/sbin/tinyproxy artifacts/
+          # 或者，如果 make install 没有指定安装目录，或者你希望安装到其他位置，
+          # 你可能需要修改 Build Tinyproxy 步骤中的 configure 命令，添加 --prefix 选项来指定安装目录。
+          # 例如：
+          # ./configure --prefix=/opt/tinyproxy
+          # 然后使用以下命令：
+          # cp /opt/tinyproxy/sbin/tinyproxy artifacts/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
