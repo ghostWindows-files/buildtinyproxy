@@ -25,22 +25,16 @@ jobs:
         run: |
           cd tinyproxy_src
           ./autogen.sh
-          ./configure
+          ./configure --prefix=/tmp/tinyproxy_build  # 指定安装到临时目录
           make
-          sudo make install
+          make install
 
       - name: Create artifact
         run: |
           mkdir -p artifacts
-          # 尝试查找 tinyproxy 的位置。  如果 make install 安装到了 /usr/local/sbin/，则使用以下命令。
-          # 如果安装到了其他位置，请修改此行。
-          cp /usr/local/sbin/tinyproxy artifacts/
-          # 或者，如果 make install 没有指定安装目录，或者你希望安装到其他位置，
-          # 你可能需要修改 Build Tinyproxy 步骤中的 configure 命令，添加 --prefix 选项来指定安装目录。
-          # 例如：
-          # ./configure --prefix=/opt/tinyproxy
-          # 然后使用以下命令：
-          # cp /opt/tinyproxy/sbin/tinyproxy artifacts/
+          cp -r /tmp/tinyproxy_build/* artifacts/  # 复制整个临时目录
+          # 或者，如果只需要可执行文件，可以使用以下命令：
+          # cp /tmp/tinyproxy_build/sbin/tinyproxy artifacts/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
